@@ -109,7 +109,7 @@ def geoMatplotlib(merge_df, selected_year, selected_month, selected_ap, k_gpd, c
             for i, row in m.iterrows():
                 ax.annotate(row['측정소명'], xy=(row['lon'], row['lat']), xytext=(-7, 2),
                             textcoords='offset points', fontsize=5, color='black', fontproperties=fontprop)
-                ax.annotate(f'{round(row['mean'],2)}{ap_unit}', xy=(row['lon'], row['lat']), xytext=(-7, -7),
+                ax.annotate(f'{round(row["mean"],2)}{ap_unit}', xy=(row['lon'], row['lat']), xytext=(-7, -7),
                             textcoords='offset points', fontsize=3, color='black', fontproperties=fontprop)
 
             ax.set_title(f'{country} {selected_year}년 {selected_month}월 평균 {selected_ap}', fontproperties=fontprop)    
