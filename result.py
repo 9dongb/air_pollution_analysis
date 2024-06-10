@@ -204,7 +204,7 @@ def all_correlation(apData, c_apData, selected_analysis):
                 
             with st.expander('- 자세히 보기') :
                 st.write( pg.corr( total_data[f'{area} {selected_ap}'], total_data[f'{selected_china} {selected_ap}'] ) )
-                st.write(f'### {selected_ap[:selected_ap.find('(')]} 상관관계 분석 시각화 (산포도)')
+                st.write(f'### {selected_ap[:selected_ap.find("(")]} 상관관계 분석 시각화 (산포도)')
                 fig, ax = plt.subplots(figsize=(10, 6))
                 plt.rcParams['font.family'] = 'Malgun Gothic'
                 sns.scatterplot(x=f'{area} {selected_ap}', y=f'{selected_china} {selected_ap}', data=total_data, ax=ax)
