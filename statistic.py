@@ -134,14 +134,14 @@ def all_correlation(apData, c_apData, selected_china, selected_analysis):
             ######################################################################################
 
             
-            st.write('### 피어슨 상관관계 계수 및 검정')
+            # st.write('### 피어슨 상관관계 계수 및 검정')
 
             if (corr_r > 0.5):
-                st.markdown(f'- 피어슨 상관계수는 **{corr_r}**이며, 중국 {selected_china}의 미세먼지 농도가 **증가**할수록 {area} 미세먼지 농도도 **증가**하는 경향성을 가진다.')
+                st.markdown(f'- 피어슨 상관계수는 **{corr_r}**이며, **중국 {selected_china}**의 미세먼지 농도가 **증가**할수록 **{area}**미세먼지 농도도 **증가**하는 경향성을 가진다.')
             elif (corr_r < -0.5):
-                st.markdown(f'- 피어슨 상관계수는 {corr_r}이며, 중국 {selected_china}의 미세먼지 농도가 **증가**할수록 {area} 미세먼지 농도는 **감소**하는 경향성을 가진다.')
+                st.markdown(f'- 피어슨 상관계수는 {corr_r}이며, **중국 {selected_china}**의 미세먼지 농도가 **증가**할수록 **{area}** 미세먼지 농도는 **감소**하는 경향성을 가진다.')
             else:
-                st.markdown(f'- 피어슨 상관계수는 {corr_r}이며, 중국 {selected_china}의 미세먼지 농도와 {area} 미세먼지 농도의 **관계성**은 비교적 **적다.**')
+                st.markdown(f'- 피어슨 상관계수는 {corr_r}이며, **중국 {selected_china}**의 미세먼지 농도와 **{area}** 미세먼지 농도의 **관계성**은 비교적 **적다.**')
 
             
 
