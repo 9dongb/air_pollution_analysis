@@ -3,8 +3,10 @@ import streamlit as st
 
 def run_home():
     # st.title('환경성 질환 경보 시스템 혹은')
-    st.title('한국과 중국의 대기오염 데이터 분석')
+    #st.title('한국과 중국의 대기오염 데이터 분석 기능 제공 서비스 (with 분석 보고서)')
+    st.markdown('### 한국과 중국의 대기오염 데이터 분석 기능 제공 서비스 (with 분석 보고서)')
     st.image('img/air_pollution_1.png')
+    
     st.markdown('''
                 ### 개요
                 - 최근 몇 년간 한국과 중국에서는 미세먼지가 **심각한 환경 문제**로 대두됨
