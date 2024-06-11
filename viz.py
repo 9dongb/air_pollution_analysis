@@ -4,6 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
+from millify import prettify
 
 def showViz(k_apData, c_Data):
     
@@ -57,7 +58,28 @@ def defaultAirPollution(apData):
     filtered_data = apData[(apData['측정소명']==selected_sgg) & (apData['측정일시'].dt.year==selected_year) & (apData['측정일시'].dt.month==selected_month)]
     filtered_data.reset_index(drop=True, inplace=True)
     filtered_data['측정일시'] = filtered_data['측정일시'].dt.date
-                                
+
+    y= ''
+    m=''
+    d=''  
+    col5, col6 = st.columns(2)
+
+    # 그래프에서 미세먼지가 가장 높은 곳에 텍스트 추가
+    max_value = max(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 값 반환환
+    max_index =np.argmax(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+    filtered_data['미세먼지농도(㎍/㎥)'].iloc[max_index]
+
+    # 그래프에서 초미세먼지가 가장 높은 곳에 텍스트 추가
+    max_value_2 = max(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 값 반환
+    max_index_2 =np.argmax(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+    
+    y = '**('+str(filtered_data['측정일시'].iloc[max_index])+')**'
+
+   # 최대값을 맨 위에 표시
+    with col5:
+        st.metric(label=f'최대 미세먼지 농도\n {y}{m}{d} ', value=f'{round(max_value, 2)}(㎍/㎥)')
+    with col6:
+        st.metric(label=f'최대 초미세먼지 농도\n {y}{m}{d}', value=f'{round(max_value_2, 2)}(㎍/㎥)')                            
     if ouput_form == '표':
 
         st.markdown(f'### {c_nm} {selected_sgg} {selected_year}년 {selected_month}월 대기오염 농도 표')
@@ -120,6 +142,8 @@ def defaultAirPollution(apData):
 
 
 def meanAirPollution(apData):
+    
+
 
     sgg_nm = sorted(apData['측정소명'].unique())
     year = sorted(apData['측정일시'].dt.year.unique())
@@ -153,12 +177,60 @@ def meanAirPollution(apData):
             selected_endYear = None # selected_endYear가 없어 다른 코드에서 발생하는 오류를 방지를 위해
             with col4:
                 selected_month = st.selectbox('월 선택', month)
-
+    max_value = 0
+    max_value_2 = 0
     
+    max_index = 0
+    max_index_2 = 0
+    y = ''
+    m = ''
+    d = ''
+    col5, col6 = st.columns(2)
+        # 필터링 및 최대값 계산
+    if selected_ym == '월':
+        filtered_data = apData[(apData['측정소명'] == selected_sgg) & (apData['year'] == selected_startYear)]
+        filtered_data = filtered_data.groupby('month')[['미세먼지농도(㎍/㎥)', '초미세먼지농도(㎍/㎥)']].agg('mean')
+        filtered_data = filtered_data.reset_index()
+        max_value = filtered_data['미세먼지농도(㎍/㎥)'].max()
+        max_value_2 = filtered_data['초미세먼지농도(㎍/㎥)'].max()
+        max_index =np.argmax(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+        max_index_2 =np.argmax(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+        y = '**('+str(filtered_data['month'].iloc[max_index])+'월)**'
+    elif selected_ym == '연도':
+        filtered_data = apData[(apData['측정소명'] == selected_sgg) & (apData['year'].between(selected_startYear, selected_endYear))]
+        filtered_data = filtered_data.groupby('year')[['미세먼지농도(㎍/㎥)', '초미세먼지농도(㎍/㎥)']].agg('mean')
+        filtered_data = filtered_data.reset_index()
+        max_value = filtered_data['미세먼지농도(㎍/㎥)'].max()
+        max_value_2 = filtered_data['초미세먼지농도(㎍/㎥)'].max()
+        max_index =np.argmax(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+        max_index_2 =np.argmax(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+        y = '**('+str(filtered_data['year'].iloc[max_index])+'년)**'
+    elif selected_ym == '일':
+        filtered_data = apData[(apData['측정소명']==selected_sgg) & (apData['year'] == selected_startYear) & (apData['month'] == selected_month)]
+        filtered_data['day'] = filtered_data['측정일시'].dt.day
+        filtered_data = filtered_data.reset_index()
+        max_value = filtered_data['미세먼지농도(㎍/㎥)'].max()
+        max_value_2 = filtered_data['초미세먼지농도(㎍/㎥)'].max()
+        max_index =np.argmax(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+        max_index_2 =np.argmax(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+        y = '**('+str(filtered_data['day'].iloc[max_index])+'일)**'
+    # 최대값을 맨 위에 표시
+    with col5:
+        st.metric(label=f'최대 미세먼지 농도\n {y}{m}{d} ', value=f'{round(max_value, 2)}(㎍/㎥)')
+    with col6:
+        st.metric(label=f'최대 초미세먼지 농도\n {y}{m}{d}', value=f'{round(max_value_2, 2)}(㎍/㎥)')
+
     if selected_ym == '월':
         filtered_data = apData[(apData['측정소명']==selected_sgg) & (apData['year'] == selected_startYear)]
         filtered_data = filtered_data.groupby('month')[['측정일시', '미세먼지농도(㎍/㎥)', '초미세먼지농도(㎍/㎥)', '이산화질소농도(ppm)', '오존농도(ppm)', '일산화탄소농도(ppm)', '아황산가스농도(ppm)']].agg('mean')
         filtered_data['month'] = filtered_data['측정일시'].dt.month
+
+        # max_value = max(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 값 반환
+        # max_value_2 = max(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 값 반환
+        
+        # max_index =np.argmax(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+        # max_index_2 =np.argmax(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=filtered_data['month'], y=filtered_data['미세먼지농도(㎍/㎥)'],
                     mode='lines', # Line plot만 그리기
@@ -172,11 +244,7 @@ def meanAirPollution(apData):
             xaxis_title="월",
             yaxis_title="농도(㎍/㎥)")
                 # 그래프에서 초미세먼지가 가장 높은 곳에 텍스트 추가
-        max_value = max(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 값 반환
-        max_value_2 = max(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 값 반환
-        
-        max_index =np.argmax(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
-        max_index_2 =np.argmax(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+
         
 
         # 그래프에 텍스트 추가
@@ -304,11 +372,11 @@ def meanAirPollution(apData):
             yaxis_title="농도(㎍/㎥)",)
 
         
-        max_value = max(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 값 반환
-        max_value_2 = max(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 값 반환
+        # max_value = max(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 값 반환
+        # max_value_2 = max(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 값 반환
         
-        max_index =np.argmax(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
-        max_index_2 =np.argmax(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+        # max_index =np.argmax(filtered_data['미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
+        # max_index_2 =np.argmax(filtered_data['초미세먼지농도(㎍/㎥)']) # 미세먼지 농도 값이 제일 큰 index 반환
 
         # 그래프에 텍스트 추가
         fig.add_annotation(
@@ -348,8 +416,8 @@ def meanAirPollution(apData):
             title= f"{c_nm} {selected_sgg} {selected_startYear}년 {selected_month}월 4종 대기오염 물질 농도 추이 ",
             xaxis_title="일",
             yaxis_title="농도(㎍/㎥)")
-
         st.plotly_chart(fig2)
+
 
 def regionAirPollution(apData):
     apData['month'] = apData['측정일시'].dt.month
@@ -373,6 +441,56 @@ def regionAirPollution(apData):
         if ouput_form == '월':
             selected_month = st.selectbox('월 선택', month)
 
+
+    max_value = 0
+    max_value_2 = 0
+    
+    max_index = 0
+    max_index_2 = 0
+    y = ''
+    m = ''
+    d = ''
+    col5, col6 = st.columns(2)
+        # 필터링 및 최대값 계산
+    if ouput_form == '월':
+        ap_list = ['미세먼지농도(㎍/㎥)', '초미세먼지농도(㎍/㎥)', '이산화질소농도(ppm)', '오존농도(ppm)', '일산화탄소농도(ppm)', '아황산가스농도(ppm)']
+
+        sal = len(selected_ap)
+        selected_ap_index = [i for i, a in enumerate(ap_list) if selected_ap[:sal] == a[:sal]][0]
+        selected_ap_name = ap_list[selected_ap_index]
+        
+        start_index = selected_ap_name.find('(')
+        ap_unit_name = selected_ap_name[start_index+1 :-1]
+        
+        filtered_data = apData[(apData['year'] == selected_year)&(apData['month'] == selected_month)]
+
+        filtered_data = filtered_data.groupby(['측정소명'])[selected_ap_name].agg('mean').reset_index()
+        
+        max_value = round(max(filtered_data[selected_ap_name]),2) # 미세먼지 농도 값이 제일 큰 값 반환환
+        max_index =np.argmax(filtered_data[selected_ap_name]) # 미세먼지 농도 값이 제일 큰 index 반환
+
+        y = '**('+str(filtered_data['측정소명'].iloc[max_index])+')**'
+    elif ouput_form == '연도':
+        ap_list = ['미세먼지농도(㎍/㎥)', '초미세먼지농도(㎍/㎥)', '이산화질소농도(ppm)', '오존농도(ppm)', '일산화탄소농도(ppm)', '아황산가스농도(ppm)']
+
+        sal = len(selected_ap)
+        selected_ap_index = [i for i, a in enumerate(ap_list) if selected_ap[:sal] == a[:sal]][0]
+        selected_ap_name = ap_list[selected_ap_index]
+        
+        start_index = selected_ap_name.find('(')
+        ap_unit_name = selected_ap_name[start_index+1 :-1]
+        filtered_data = apData[apData['year'] == selected_year]
+
+        filtered_data = filtered_data.groupby(['측정소명'])[selected_ap_name].agg('mean').reset_index()
+
+        max_value = round(max(filtered_data[selected_ap_name]),2) # 미세먼지 농도 값이 제일 큰 값 반환환
+        max_index =np.argmax(filtered_data[selected_ap_name]) # 미세먼지 농도 값이 제일 큰 index 반환
+        
+        y = '**('+str(filtered_data['측정소명'].iloc[max_index])+')**'
+
+    # 최대값을 맨 위에 표시
+    with col5:
+        st.metric(label=f'최대 미세먼지 농도\n {y} ', value=f'{round(max_value, 2)}(㎍/㎥)')
 
     if ouput_form == '연도':
         ap_list = ['미세먼지농도(㎍/㎥)', '초미세먼지농도(㎍/㎥)', '이산화질소농도(ppm)', '오존농도(ppm)', '일산화탄소농도(ppm)', '아황산가스농도(ppm)']

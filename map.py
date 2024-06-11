@@ -89,7 +89,7 @@ def geoMatplotlib(merge_df, selected_year, selected_month, selected_ap, k_gpd, c
 
     selected_view = st.radio('보기 방식', ['전체 지도 표시', '선택된 지도만 표시', '자세히 보기'])
     
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5))  # 1행 2열의 서브플롯 생성
+    fig, axes = plt.subplots(1, 2, figsize=(15, 10))  # 1행 2열의 서브플롯 생성
 
     
     for ax, g, m, country in zip(axes, [k_gpd, c_gpd], [merge_df, c_merge_df], ['한국', '중국']):
