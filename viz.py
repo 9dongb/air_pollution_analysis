@@ -140,6 +140,9 @@ def defaultAirPollution(apData):
         
         st.plotly_chart(fig2)
 
+    csv = filtered_data.drop(['측정소명'], axis=1).to_csv(index=False).encode('utf-8')
+    st.sidebar.download_button('결과 다운로드(CSV)', csv, f'AP.csv', 'text/csv', key='download-csv')
+
 
 def meanAirPollution(apData):
     
